@@ -133,7 +133,7 @@ async fn main() -> Result<()> {
         .with_env_filter(filter)
         .init();
 
-    info!("Konnect v{} starting", env!("CARGO_PKG_VERSION"));
+    info!("Konnect v{} starting", konnect_core::RELEASE);
     ipc_source.log(&config.ipc_address);
 
     // Name the configuration that actually started this process. A user whose

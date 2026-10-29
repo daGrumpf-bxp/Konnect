@@ -19,6 +19,16 @@ fn main() {
         None => (commit_from_git_files(&repo_root), "git_head"),
     };
 
+    // Release name: the package version plus the short commit, so a build of
+    // the fork says where it sits (0.13.1-556084e). Without a commit it is the
+    // bare package version.
+    let version = env::var("CARGO_PKG_VERSION").expect("Cargo sets CARGO_PKG_VERSION");
+    let release = match &commit {
+        Some(commit) => format!("{version}-{}", &commit[..7]),
+        None => version,
+    };
+    println!("cargo:rustc-env=KONNECT_RELEASE={release}");
+
     if let Some(commit) = commit {
         println!("cargo:rustc-env=KONNECT_BUILD_COMMIT={commit}");
         println!("cargo:rustc-env=KONNECT_BUILD_COMMIT_SOURCE={source}");

@@ -24,7 +24,7 @@ impl McpServerState {
             },
             server_info: ServerInfo {
                 name: "konnect".to_string(),
-                version: env!("CARGO_PKG_VERSION").to_string(),
+                version: crate::RELEASE.to_string(),
             },
             instructions,
         }

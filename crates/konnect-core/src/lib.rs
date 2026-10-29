@@ -1,3 +1,9 @@
+/// Release name of this build: package version plus short commit when the
+/// build knew it (`0.13.1-556084e`). Shown to MCP clients and in
+/// `get_installation_info`; `--version` keeps the bare package version, which
+/// the newer-binary probe compares.
+pub const RELEASE: &str = env!("KONNECT_RELEASE");
+
 pub mod config_resolution;
 pub mod design_hash;
 pub(crate) mod freerouting_mcp;

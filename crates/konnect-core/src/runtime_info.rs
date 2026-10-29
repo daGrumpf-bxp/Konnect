@@ -49,6 +49,7 @@ pub(crate) async fn collect(
     json!({
         "build": {
             "version": running_version,
+            "release": crate::RELEASE,
             "commit": option_env!("KONNECT_BUILD_COMMIT"),
             "commit_source": option_env!("KONNECT_BUILD_COMMIT_SOURCE"),
             "working_tree_state": "not_recorded",
