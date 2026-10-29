@@ -201,7 +201,10 @@ mod tests {
                         "edit_schematic_component/properties/field_placements" |
                         "batch_edit_schematic_components/properties/edits/items/properties/fields" |
                         "copy_routing_pattern/properties/net_map" |
-                        "apply_template/properties/net_mappings"
+                        "apply_template/properties/net_mappings" |
+                        // Passed through to Freerouting; what it does not
+                        // apply is read back and reported (settings_not_applied).
+                        "route_specctra_dsn/properties/router_settings"
                     ),
                         "unreviewed open input record: {path}"
                     );
