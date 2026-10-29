@@ -5,30 +5,13 @@
 <img src="resources/images/KiCAD-MCP-Server-rust.svg" alt="KiCAD-MCP-Server Logo" height="240" />
 
 
-# Konnect is MOVING!!!
+# Konnect
 
 </div>
 
-> ## Konnect has moved to Konnect-EDA
->
-> **This repository will be archived at midnight (US Eastern) at the end of Sunday, October 25, 2026.**
-> After that it's read-only. Everything here stays readable, and the releases already published stay
-> available under the AGPL-3.0, but no new issues, comments or pull requests can be added.
->
-> Konnect continues as **[Konnect-EDA](https://github.com/Orchis-ai-LLC/Konnect-EDA)**, from
-> Orchis.ai LLC. It's the same AI-assisted KiCad design tool, and all development continues there:
->
-> - **Downloads:** the [Konnect-EDA Releases page](https://github.com/Orchis-ai-LLC/Konnect-EDA/releases);
->   the first release is coming soon. Konnect-EDA is commercial, closed-source software, **free to use
->   during the beta** (until version 1.0).
-> - **Bugs and feature requests:** the
->   [Konnect-EDA issue tracker](https://github.com/Orchis-ai-LLC/Konnect-EDA/issues).
-> - **Want to help build it?** Sign up to contribute at
->   **[orchis.ai/konnect/join](https://orchis.ai/konnect/join)**.
-> - **Contributed to Konnect?** Please answer your sign-off email, or sign in with GitHub at
->   [orchis.ai/konnect/sign-off](https://orchis.ai/konnect/sign-off). It's open until November 20.
->
-> Thank you to everyone who built Konnect with us.
+> Fork of [mixelpixx/Konnect](https://github.com/mixelpixx/Konnect), whose last release is
+> 0.13.0. Builds of this fork are named `0.13.1-<commit>`: `get_installation_info` reports it as
+> `build.release`.
 
 > **Status: beta.** The core toolchain is tested and working, but this is a young
 > release and it wants real-world mileage and review. Issues and PRs are welcome —
