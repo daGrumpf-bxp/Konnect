@@ -767,12 +767,33 @@ fn freerouting_log_path() -> Option<PathBuf> {
     if let Some(path) = std::env::var_os("FREEROUTING_LOG") {
         return Some(PathBuf::from(path));
     }
+    Some(freerouting_state_dir()?.join("logs/freerouting.log"))
+}
+
+/// `$XDG_STATE_HOME/freerouting`, else `~/.local/state/freerouting`: where
+/// Freerouting already keeps its logs.
+fn freerouting_state_dir() -> Option<PathBuf> {
     let state = std::env::var_os("XDG_STATE_HOME")
         .map(PathBuf::from)
         .or_else(|| {
             std::env::var_os("HOME").map(|home| PathBuf::from(home).join(".local/state"))
         })?;
-    Some(state.join("freerouting/logs/freerouting.log"))
+    Some(state.join("freerouting"))
+}
+
+/// HotSpot writes a crash report (`hs_err_pid*.log`) and possibly a core dump
+/// into its working directory, which is the KiCad project Konnect serves: a
+/// G1 crash once left its report at the root of a project repository. Send
+/// the report next to Freerouting's logs (the temporary directory when there
+/// is no state directory) and never dump core.
+fn jvm_crash_arguments(state_dir: Option<&Path>) -> Vec<std::ffi::OsString> {
+    let directory = state_dir
+        .filter(|directory| std::fs::create_dir_all(directory).is_ok())
+        .map(Path::to_path_buf)
+        .unwrap_or_else(std::env::temp_dir);
+    let mut error_file = std::ffi::OsString::from("-XX:ErrorFile=");
+    error_file.push(directory.join("hs_err_pid%p.log"));
+    vec![error_file, "-XX:-CreateCoredumpOnCrash".into()]
 }
 
 /// The last unrouted-connection count logged for the job tagged `tag`: a pass
@@ -931,6 +952,7 @@ impl LocalMcpClient {
     fn spawn(jar: &Path) -> Result<Self> {
         let mut command = Command::new(crate::java_runtime::java_executable());
         command
+            .args(jvm_crash_arguments(freerouting_state_dir().as_deref()))
             .arg("-jar")
             .arg(jar)
             .args(server_arguments())
@@ -1826,6 +1848,24 @@ mod tests {
         assert_eq!(first.parent(), output.parent());
         assert_ne!(first, second);
         assert!(extension_is(&first, "ses"));
+    }
+
+    #[test]
+    fn jvm_crash_reports_stay_out_of_the_project_directory() {
+        let state = tempfile::tempdir().unwrap();
+        let directory = state.path().join("freerouting");
+        let arguments = jvm_crash_arguments(Some(&directory));
+        let mut expected = std::ffi::OsString::from("-XX:ErrorFile=");
+        expected.push(directory.join("hs_err_pid%p.log"));
+        assert_eq!(arguments, [expected, "-XX:-CreateCoredumpOnCrash".into()]);
+        assert!(directory.is_dir());
+
+        let blocked = state.path().join("file");
+        std::fs::write(&blocked, "").unwrap();
+        let fallback = jvm_crash_arguments(Some(&blocked.join("freerouting")));
+        let mut expected = std::ffi::OsString::from("-XX:ErrorFile=");
+        expected.push(std::env::temp_dir().join("hs_err_pid%p.log"));
+        assert_eq!(fallback[0], expected);
     }
 
     #[test]
