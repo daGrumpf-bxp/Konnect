@@ -18,22 +18,6 @@
 > see [CONTRIBUTING.md](CONTRIBUTING.md) and the
 > [naming conventions](docs/NAMING_CONVENTIONS.md).
 
-> ## Add realtime research to KiCAD MCP and Konnect. Introducing Nimrod
->
-> [**Nimrod**](https://nimrod.orchis.ai) is our web-research MCP server:
-> quality-scored Google search, clean webpage extraction, and deep multi-source
-> research. Design the board with Konnect while Nimrod pulls live parts availability, datasheets,
-> and errata — no more guessing from year-old training data
->
-> - Works with claude.ai, Claude Desktop, Claude Code, VS Code, and any MCP client
-> - 1 credit = 1 search · extraction always free · free 50-credit trial, no card
-> - Official MCP Registry: [`ai.orchis/nimrod`](https://registry.modelcontextprotocol.io)
-
-
-
-
-
-
 **AI-assisted PCB design for KiCAD 10.** Konnect is a native KiCAD plugin — a single
 Rust binary — that lets Claude and other AI assistants design schematics and PCBs
 through the [Model Context Protocol](https://modelcontextprotocol.io) (MCP).
