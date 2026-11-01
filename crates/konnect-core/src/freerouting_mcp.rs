@@ -1285,15 +1285,26 @@ fn project_only_settings(
 /// from the DSN: KiCad leaves the board edge clearance out of it, and the
 /// hole rules have no Specctra form. Rules left at 0 or absent are not sent,
 /// so Freerouting keeps its own defaults for them.
-pub(crate) fn project_route_rules(project: &Value) -> Map<String, Value> {
+///
+/// With `neck_to_min_track_width`, `min_track_width` also goes out as
+/// `neck_width_um`: the DSN only carries the net class widths, and a
+/// connection that fails at its class width is then retried at the minimum
+/// width KiCad allows. Freerouting retries the whole connection, on any net,
+/// power nets included, hence opt-in.
+pub(crate) fn project_route_rules(
+    project: &Value,
+    neck_to_min_track_width: bool,
+) -> Map<String, Value> {
     const RULES: [(&str, &str); 3] = [
         ("min_copper_edge_clearance", "copper_to_edge_clearance_um"),
         ("min_hole_to_hole", "hole_to_hole_um"),
         ("min_hole_clearance", "hole_clearance_um"),
     ];
+    const NECK: (&str, &str) = ("min_track_width", "neck_width_um");
     let rules = &project["board"]["design_settings"]["rules"];
     RULES
         .iter()
+        .chain(neck_to_min_track_width.then_some(&NECK))
         .filter_map(|(kicad, freerouting)| {
             let mm = rules[*kicad].as_f64().filter(|mm| *mm > 0.0)?;
             Some((freerouting.to_string(), json!((mm * 1000.0).round())))
@@ -1777,13 +1788,22 @@ mod tests {
             "min_copper_edge_clearance": 0.5,
             "min_hole_to_hole": 0.25,
             "min_hole_clearance": 0.0,
-            "min_clearance": 0.2
+            "min_clearance": 0.2,
+            "min_track_width": 0.15
         } } } });
         assert_eq!(
-            Value::Object(project_route_rules(&project)),
+            Value::Object(project_route_rules(&project, false)),
             json!({ "copper_to_edge_clearance_um": 500.0, "hole_to_hole_um": 250.0 })
         );
-        assert!(project_route_rules(&json!({})).is_empty());
+        assert_eq!(
+            Value::Object(project_route_rules(&project, true)),
+            json!({
+                "copper_to_edge_clearance_um": 500.0,
+                "hole_to_hole_um": 250.0,
+                "neck_width_um": 150.0
+            })
+        );
+        assert!(project_route_rules(&json!({}), true).is_empty());
     }
 
     #[test]
